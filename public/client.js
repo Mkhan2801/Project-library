@@ -64,8 +64,9 @@ $( document ).ready(function() {
       type: 'post',
       dataType: 'json',
       data: $('#newBookForm').serialize(),
-      success: function(data) {
+      success: function(data1) {
         //update list
+       
       }
     });
   });

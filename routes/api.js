@@ -51,28 +51,29 @@ module.exports = function (app) {
       let commentcount = 0;
       let comments = [];
       let inputData = { _id, title, commentcount, comments };
-      if(title){
+      if (title) {
         myDB(async client => {
           const myDataBase = await client.db('test').collection("project");
           myDataBase.insertOne(inputData)
             .then((data, err) => {
               if (data) {
                 return res.json({
-                  _id,title
+                  _id, title
                 })
-                
+
               }
               else (res.json({ error: "could not update", "_id": _id }))
               // return res.json({ error: "could not update", "_id": input._id })
-  
+
             })
-  
+
         })
-      }else{
-       res.send('missing required field title')
+      } else {
+        res.send('missing required field title')
+
       }
 
-      
+
     })
 
     .delete(function (req, res) {
@@ -90,31 +91,36 @@ module.exports = function (app) {
 
 
     });
-
+  app.route('/api/test')
+    .post(function (req, res) {
+      console.log('output')
+      console.log(req.body)
+      console.log('output')
+    })
 
 
   app.route('/api/books/:id')
     .get(function (req, res) {
       let bookid = req.params.id;
-      if(bookid){
+      if (bookid) {
         myDB(async client => {
           const myDataBase = await client.db('test').collection("project");
           myDataBase.findOne({ _id: bookid }).then((data) => {
-            if(data){
+            if (data) {
 
-              res.json(data)
+              res.json(data);
             }
-            else{
+            else {
 
               res.send('no book exists')
             }
           })
         })
       }
-      else{
-        res.json({result:'ERR'})
+      else {
+        res.json({ result: 'ERR' })
       }
-      
+
       //json res format: {"_id": bookid, "title": book_title, "comments": [comment,comment,...]}
     })
 
@@ -122,24 +128,27 @@ module.exports = function (app) {
 
       let bookid = req.params.id;
       let comment = req.body.comment;
-      if (bookid && comment) {
+      if (!comment ) {
+        res.send('missing required field comment')
+      }
+      else{
         myDB(async client => {
           const myDataBase = await client.db('test').collection("project");
-          myDataBase.updateOne({ _id: bookid },{$inc:{commentcount:1},$push:{comments:comment}}).then((data) => {
-            if(data.matchedCount){
+          myDataBase.updateOne({ _id: bookid }, { $inc: { commentcount: 1 }, $push: { comments: comment } }).then((data) => {
+            if (data.matchedCount) {
               myDataBase.findOne({ _id: bookid }).then((data) => {
                 res.json(data)
               })
             }
-            else{
+            else {
               res.send('no book exists')
+  
             }
           })
-        })
+        });
       }
-      else {
-        res.send('missing required field comment')
-      }
+
+      
 
 
 
@@ -149,23 +158,23 @@ module.exports = function (app) {
 
     .delete(function (req, res) {
       let bookid = req.params.id;
-      if(bookid){
+      if (bookid) {
         myDB(async client => {
           const myDataBase = await client.db('test').collection("project");
           myDataBase.deleteOne({ _id: bookid }).then((data) => {
-            if(data.deletedCount){
+            if (data.deletedCount) {
               res.send('delete successful');
             }
-            else{
+            else {
               res.send('no book exists')
             }
           })
         })
       }
-      else{
-        res.json({result:'ERR'})
+      else {
+        res.json({ result: 'ERR' })
       }
-      
+
       //if successful response will be 'delete successful'
 
 
